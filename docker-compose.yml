@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  dev_db:
+    image: postgres:latest
+    container_name: postgres_dev
+    environment:
+      POSTGRES_USER: ${DB_POS_DEV_USER}
+      POSTGRES_PASSWORD: ${DB_POS_DEV_PASSWORD}
+      POSTGRES_DB: ${DB_POS_DEV_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_POS_DEV_USER} -d ${DB_POS_DEV_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  prod_db:
+    image: postgres:latest
+    container_name: postgres_production
+    environment:
+      POSTGRES_USER: ${DB_POS_PROD_USER}
+      POSTGRES_PASSWORD: ${DB_POS_PROD_PASSWORD}
+      POSTGRES_DB: ${DB_POS_PROD_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_POS_PROD_USER} -d ${DB_POS_PROD_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata_dev:
+  pgdata_prod:
