@@ -11,7 +11,31 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+from pathlib import Path
 
+from environ import Env
+
+env = Env(
+    BEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, ["127.0.0.1", "localhost"]),
+    DJANGO_ENV=(str, "dev"),
+)
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+Env.read_env(Path(BASE_DIR, ".env"))
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env("DEBUG")
+
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -73,12 +97,28 @@ WSGI_APPLICATION = "news_service.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if env("DJANGO_ENV") == "dev":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_POS_DEV_NAME"),
+            "USER": env("DB_POS_DEV_USER"),
+            "PASSWORD": env("DB_POS_DEV_PASSWORD"),
+            "HOST": env("DB_POS_DEV_HOST"),
+            "PORT": env("DB_POS_DEV_PORT"),
+        },
     }
-}
+elif env("DJANGO_ENV") == "prod":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_POS_PROD_NAME"),
+            "USER": env("DB_POS_PROD_USER"),
+            "PASSWORD": env("DB_POS_PROD_PASSWORD"),
+            "HOST": env("DB_POS_PROD_HOST"),
+            "PORT": env("DB_POS_PROD_PORT"),
+        },
+    }
 
 
 # Password validation
