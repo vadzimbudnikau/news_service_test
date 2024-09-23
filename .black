@@ -1,0 +1,21 @@
+[black]
+skip-string-normalization = true
+line-length = 100
+target-version = ['py39', 'py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | \.env
+  | \.gitignore
+  | venv
+  | __pycache__
+  | migrations
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
