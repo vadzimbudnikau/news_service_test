@@ -42,3 +42,39 @@ class NewsDetailView(APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
         logger.debug(f'News retrieved from cache: {news}')
         return Response(news)
+
+
+class NewsUpdateView(APIView):
+    """
+    API view to update an existing News object by its ID.
+    """
+
+    def put(self, request, pk):
+        try:
+            news = News.objects.get(pk=pk)
+            serializer = NewsSerializer(news, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                logger.debug(f'News updated: {serializer.data}')
+                return Response(serializer.data)
+            logger.error(f'Failed to update news: {serializer.errors}')
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except News.DoesNotExist:
+            logger.warning(f'News with ID {pk} not found for update.')
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class NewsDeleteView(APIView):
+    """
+    API view to delete an existing News object by its ID.
+    """
+
+    def delete(self, request, pk):
+        try:
+            news = News.objects.get(pk=pk)
+            news.delete()
+            logger.debug(f'News with ID {pk} deleted.')
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except News.DoesNotExist:
+            logger.warning(f'News with ID {pk} not found for deletion.')
+            return Response(status=status.HTTP_404_NOT_FOUND)
